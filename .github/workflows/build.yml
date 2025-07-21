@@ -17,6 +17,7 @@ jobs:
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
         echo "$(make -s log | grep VEX_URL)" >> "$GITHUB_ENV"
         echo "$(make -s log | grep VEX_JSON)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep SEVERITY)" >> "$GITHUB_ENV"
 
     - name: Build container image
       uses: docker/build-push-action@v6
@@ -43,7 +44,7 @@ jobs:
         exit-code: '1'
         ignore-unfixed: true
         vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+        severity: ${{ env.SEVERITY }}
 
   build-arm64:
     runs-on: ubuntu-latest
@@ -62,6 +63,7 @@ jobs:
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
         echo "$(make -s log | grep VEX_URL)" >> "$GITHUB_ENV"
         echo "$(make -s log | grep VEX_JSON)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep SEVERITY)" >> "$GITHUB_ENV"
 
     - name: Build container image
       uses: docker/build-push-action@v6
@@ -90,4 +92,4 @@ jobs:
         exit-code: '1'
         ignore-unfixed: true
         vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
+        severity: ${{ env.SEVERITY }}
