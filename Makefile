@@ -1,4 +1,6 @@
 SEVERITY = HIGH,CRITICAL
+VEX_URL = https://raw.githubusercontent.com/rancher/vexhub/refs/heads/main/reports/rancher.openvex.json
+VEX_JSON = $(notdir $(VEX_URL))
 
 UNAME_M = $(shell uname -m)
 ifndef TARGET_PLATFORMS
@@ -54,7 +56,14 @@ push-image:
 
 .PHONY: image-scan
 image-scan:
-	trivy image --severity $(SEVERITY) --no-progress --ignore-unfixed $(IMAGE)
+	wget -q -O $(VEX_JSON) $(VEX_URL)
+	trivy image \
+                --vex $(VEX_JSON) \
+                --severity $(SEVERITY) \
+                --no-progress \
+                --ignore-unfixed \
+                $(IMAGE)
+	rm $(VEX_JSON)
 
 .PHONY: log
 log:
