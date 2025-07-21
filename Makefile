@@ -1,4 +1,6 @@
 SEVERITIES = HIGH,CRITICAL
+VEX_URL = https://raw.githubusercontent.com/rancher/vexhub/refs/heads/main/reports/rancher.openvex.json
+VEX_JSON = $(notdir $(VEX_URL))
 
 UNAME_M = $(shell uname -m)
 ifndef TARGET_PLATFORMS
@@ -54,7 +56,15 @@ push-image:
 
 .PHONY: image-scan
 image-scan:
-	trivy image --severity $(SEVERITIES) --no-progress --ignore-unfixed $(IMAGE)
+	wget -q -O $(VEX_JSON) $(VEX_URL)
+	trivy image \
+                --exit-code 1 \
+                --vex $(VEX_JSON) \
+                --severity $(SEVERITIES) \
+                --no-progress \
+                --ignore-unfixed \
+                $(IMAGE)
+	rm $(VEX_JSON)
 
 .PHONY: log
 log:
@@ -67,4 +77,6 @@ log:
 	@echo "K3S_ROOT_VERSION=$(K3S_ROOT_VERSION)"
 	@echo "UNAME_M=$(UNAME_M)"
 	@echo "TARGET_PLATFORMS=$(TARGET_PLATFORMS)"
-
+	@echo "SEVERITIES=$(SEVERITIES)"
+	@echo "VEX_URL=$(VEX_URL)"
+	@echo "VEX_JSON=$(VEX_JSON)"
