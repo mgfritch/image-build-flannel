@@ -16,6 +16,8 @@ jobs:
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep VEX_URL)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep VEX_JSON)" >> "$GITHUB_ENV"
     - name: Build container image
       uses: docker/build-push-action@v6
       with:
@@ -26,8 +28,15 @@ jobs:
         build-args: |
           TAG=${{ env.TAG }}
 
+    - name: wget
+      uses: wei/wget@v1
+      with:
+        args: -q -O ${{ env.VEX_JSON }} ${{ env.VEX_URL }}
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.32.0
+      env:
+          TRIVY_VEX: ${{ env.VEX_JSON }}
       with:
         image-ref: rancher/hardened-flannel:${{ env.TAG }}-amd64
         format: 'table'
@@ -52,6 +61,8 @@ jobs:
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep VEX_URL)" >> "$GITHUB_ENV"
+        echo "$(make -s log | grep VEX_JSON)" >> "$GITHUB_ENV"
     - name: Build container image
       uses: docker/build-push-action@v6
       with:
@@ -64,8 +75,15 @@ jobs:
         build-args: |
           TAG=${{ env.TAG }}
 
+    - name: wget
+      uses: wei/wget@v1
+      with:
+        args: -q -O ${{ env.VEX_JSON }} ${{ env.VEX_URL }}
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.32.0
+      env:
+          TRIVY_VEX: ${{ env.VEX_JSON }}
       with:
         image-ref: rancher/hardened-flannel:${{ env.TAG }}-arm64
         format: 'table'
