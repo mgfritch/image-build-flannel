@@ -39,6 +39,18 @@ jobs:
           echo "$(make -s log | grep VEX_JSON)" >> "$GITHUB_ENV"
           echo "$(make -s log | grep SEVERITY)" >> "$GITHUB_ENV"
 
+      - uses: actions/github-script@v6
+        id: get_latest_release
+        with:
+          script: |
+            const { data: release } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            core.setOutput('tag_name', release.tag_name);
+            core.setOutput('release_id', release.id);
+            core.setOutput('upload_url', release.upload_url);
+
       - name: Get rancher openvex report
         uses: wei/wget@v1
         with:
@@ -49,7 +61,7 @@ jobs:
         env:
             TRIVY_VEX: ${{ env.VEX_JSON }}
         with:
-          image-ref: ${{ env.IMAGE }}
+          image-ref: ${{ steps.get_latest_release.outputs.tag_name }}
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
