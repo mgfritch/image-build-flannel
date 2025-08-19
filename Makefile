@@ -1,4 +1,4 @@
-SEVERITIES = HIGH,CRITICAL
+SEVERITY = HIGH,CRITICAL
 
 UNAME_M = $(shell uname -m)
 ifndef TARGET_PLATFORMS
@@ -54,7 +54,7 @@ push-image:
 
 .PHONY: image-scan
 image-scan:
-	trivy image --severity $(SEVERITIES) --no-progress --ignore-unfixed $(IMAGE)
+	trivy image --severity $(SEVERITY) --no-progress --ignore-unfixed $(IMAGE)
 
 .PHONY: log
 log:
@@ -67,4 +67,6 @@ log:
 	@echo "K3S_ROOT_VERSION=$(K3S_ROOT_VERSION)"
 	@echo "UNAME_M=$(UNAME_M)"
 	@echo "TARGET_PLATFORMS=$(TARGET_PLATFORMS)"
-
+	@echo "SEVERITY=$(SEVERITY)"
+	@echo "VEX_URL=$(VEX_URL)"
+	@echo "VEX_JSON=$(VEX_JSON)"
